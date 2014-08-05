@@ -1,0 +1,21 @@
+module.exports = {
+	OK: 200,
+	FAIL: 500,
+
+	ENTRY: {
+		FA_TOKEN_INVALID: 1001,
+		FA_TOKEN_EXPIRE: 1002,
+		FA_USER_NOT_EXIST: 1003,
+	},
+	GATE:{
+		FA_NO_SERVER_AVAILABLE: 1011
+	},
+	AUTH: {
+		FA_UNKNOWN_CONNECTOR:   1021, 
+	},
+	CHAT: {
+		FA_CHANNEL_CREATE:      1031, 
+        FA_CHANNEL_NOT_EXIST:   1032, 
+        FA_USER_NOT_ONLINE:     1033
+	}
+}

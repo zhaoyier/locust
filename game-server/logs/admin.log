@@ -1,0 +1,1 @@
+[2014-08-04 17:41:14.117] [INFO] admin-log - [32m[/home/zhaojianwei/pomelo/locust/game-server/node_modules/pomelo/lib/master/master.js] [39m{"action":"execute","moduleId":"__console__","method":"clientHandler","msg":{"signal":"list","clientId":"pomelo_list_1407145273930","username":"admin"}}
