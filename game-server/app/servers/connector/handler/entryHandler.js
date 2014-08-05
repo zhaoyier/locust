@@ -19,53 +19,43 @@ var Handler = function(app) {
  * @return {Void}
  */
 Handler.prototype.entry = function(msg, session, next) {
-	console.log("^^^^^^^^^^^^^^^^^^^^^^^^^");
-  //next(null, {code: 200, msg: 'game server is ok.'});
-  var res = this.app.rpc.auth.authRemote.checkToke(session, msg.username, msg.token);
+  var self = this;
 
-  if (res !== 200){
-  	return next(new Error("invalid entry"));
+  userDao.loginAccount(msg.username, msg.password, function(error, res){
+    if (!error){
+      session.bind(msg.username);
+      session.on('closed', onUserLeave.bind(null, self.app));
+
+      var ip = session.__session__.__socket__.remoteAddress.ip;
+      self.app.rpc.auth.authRemote.entryGame(session, res.id, self.app.get('serverId'), ip);
+      next(null, {code: 200, id: res.id});
+    }
+    else {
+      next(null, {code: 201})
+    }
+  })
+};
+
+Handler.prototype.register = function(msg, session, next){
+  if (msg.password !== msg.repassword){
+    next(null, {code: 201});
+    return ;
   }
 
-  var wuid, player, players;
-  async.waterfall([
-  		function(callback){
-  			userDao.verifyAccount(msg.username, msg.password, callback);
-  		}, function(account, callback){
-  			if (!account){
-  				callback(201);
-  			}
+  userDao.registerAccount(msg.username, msg.password, function(error, res){
+    if (!error){
+      session.bind(msg.username);
+      session.on('closed', onUserLeave.bind(null, self.app));
 
-  			wuid = account.wuid;
-  			userDao.getPlayerInfo(account.wuid, callback);
-  		}, function(res, callback){
-  			players = res;
-  			this.app.get('sessionService').kick(wuid, callback);
-  		}, function(callback){
-  			session.bind(wuid, cb);
-  		}, function(callback){
-  			if (!players || players.length === 0){
-  				next (null, {code: 200});
-  				return ;
-  			}
+      var ip = session.__session__.__socket__.remoteAddress.ip;
+      self.app.rpc.auth.authRemote.entryGame(session, res.id, self.app.get('serverId'), ip);
 
-  			player = players[0];
-  			session.set('playerId', player.id);
-  			session.set('playerName', player.name);
-  			session.on('closed', onUserLeave.bind(null, this.app));
-  			session.pushAll(callback);
-  		}, function(callback){
-  			this.app.rpc.chat.chatRemote.add(session, player.id, player.name, '1', callback);
-  		}
-  	], function(error){
-  		if (error){
-  			next(error, {code: 201});
-  			return ;
-  		}
-		console.log("****************-----------:\t", error);
-  		next (null, {code: 200, player: players ? players[0]: null});
-  	})
-};
+      next(null, {code: 200, id: res.id});
+    } else {
+      next(null, {code: 201});
+    }
+  }) 
+}
 
 /**
  * User log out handler

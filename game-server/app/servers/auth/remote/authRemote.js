@@ -9,24 +9,20 @@ module.exports = function(app){
 
 var AuthRemote = function(app){
 	this.app = app;
-	this.uidMap = {};
+	this.accountMap = {};
 	this.tokenMap = {};
 }
 
-AuthRemote.prototype.addToken = function(uid, token, ip){
-	if (!!this.tokenMap[uid]){
-		return Code.OK;
-	}
-
+/*AuthRemote.prototype.addToken = function(username, token, ip){
 	var date = new Date();
 	var record = {token: token, time: date.getTime()};
-	this.tokenMap[uid] = record;
+	this.tokenMap[username] = record;
 
 	return Code.OK;
 }
 
-AuthRemote.prototype.checkToke = function(uid, token){
-	var res = this.tokenMap[uid];
+AuthRemote.prototype.checkToke = function(username, token){
+	var res = this.tokenMap[username];
 	if (res === undefined || res['token'] !== token){
 		return Code.FAIL;
 	}
@@ -36,21 +32,16 @@ AuthRemote.prototype.checkToke = function(uid, token){
 	}
 
 	return Code.OK;
-}
+}*/
 
-AuthRemote.prototype.addSid = function(uid, sid){
-	if (!!this.uidMap[uid]){
-		return Code.OK;
-	}
-
+AuthRemote.prototype.entryGame = function(accountID, sid, ip, callback){
 	var date = new Date();
-	var record = {sid: sid, time: date.getTime()};
-
-	return Code.OK;
+	var record = {sid: sid, host: ip, time: date.getTime()};
+	this.accountMap[accountID] = record;
 }
 
-AuthRemote.prototype.querySid = function(){
-	var res = this.uidMap[uid];
+AuthRemote.prototype.getServerId = function(accountID){
+	var res = this.accountMap[accountID];
 
 	if (res === undefined){
 		return null;
@@ -60,8 +51,21 @@ AuthRemote.prototype.querySid = function(){
 	}
 }
 
-var getSidByUid = function(uid, app){
-	var connector = dispatcher.dispatch(uid, app.getServersByType('connector'));
+AuthRemote.prototype.getServerIds = function(acccountIDS){
+	var results = [];
+	for (var i = 0; i < acccountIDS.length; i++) {
+		var res = this.accountMap[acccountIDS[i]];
+		if (res != undefined){
+			results.push(res[sid]);
+		}
+	}
+	return results;
+}
+
+
+
+var getSidByUid = function(username, app){
+	var connector = dispatcher.dispatch(username, app.getServersByType('connector'));
 
 	if (connector){
 		return connector.id;
