@@ -13,6 +13,7 @@ userDao.registerAccount = function(username, password, callback){
 
 
 userDao.createPlayer = function(uid, callback){
+	console.log("**********createPlayer********", uid);
 	utils.invokeCallback(callback, null, {id: 100, avatar: "1"});
 }
 

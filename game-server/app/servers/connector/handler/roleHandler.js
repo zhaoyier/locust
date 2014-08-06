@@ -9,7 +9,6 @@ var Handler = function(app) {
 };
 
 Handler.prototype.createPlayer = function(msg, session, next){
-	
 	userDao.getPlayer(id, function(error, player){
 		if (player){
 			next(null, {code: 201});
