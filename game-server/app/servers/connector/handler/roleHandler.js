@@ -9,7 +9,7 @@ var Handler = function(app) {
 };
 
 Handler.prototype.createPlayer = function(msg, session, next){
-	userDao.getPlayer(id, function(error, player){
+	userDao.getPlayerInfo(msg.from, function(error, player){
 		if (player){
 			next(null, {code: 201});
 			return ;
@@ -23,7 +23,7 @@ Handler.prototype.createPlayer = function(msg, session, next){
 }
 
 Handler.prototype.getPlayer = function(msg, session, next){
-	userDao.getPlayerInfo(id, function(error, player){
+	userDao.getPlayerInfo(msg.from, function(error, player){
 		if (player){
 			next(null, {code: 200, avatar: player.avatar});
 			return ;
