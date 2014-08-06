@@ -31,11 +31,11 @@ app.configure('production|development', 'game', function(){
         }); 
 });
 
-/*
+
 app.configure('production|development', 'auth|chat', function(){
-	app.route('chat', routeUtil.chat);
+	//app.route('chat', routeUtil.chat);
 	app.route('auth', routeUtil.auth);
-})*/
+})
 
 // start app
 app.start();

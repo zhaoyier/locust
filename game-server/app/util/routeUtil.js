@@ -2,7 +2,7 @@ var exp = module.exports;
 var dispatcher = require('./dispatcher');
 
 exp.auth = function(session, msg, app, cb){
-	var authServers = app.getServersByType('time');
+	var authServers = app.getServersByType('auth');
 
 	if (!authServers || authServers.length === 0){
 		cb(new Error('can not find authServers'));

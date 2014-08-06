@@ -21,29 +21,30 @@ AuthRemote.prototype.entryGame = function(uid, sid, ip, callback){
 	callback(null);
 }
 
-AuthRemote.prototype.getServerId = function(uid){
+AuthRemote.prototype.getServerId = function(uid, callback){
 	var res = this.uidMap[uid];
 
 	if (res === undefined){
-		return null;
+		callback(201);
 	}
 	else {
-		return res[sid];
+		callback(null, res[sid]);
 	}
 }
 
-AuthRemote.prototype.kick = function(uid, sid, name){
+AuthRemote.prototype.kick = function(uid, sid, name, callback){
 	console.log('********kick************:\t', uid, sid, name);
 	var res = this.uidMap[uid];
 	if (res !== undefined){
 		delete this.uidMap[uid];
+		callback(null, uid);
 	}
 }
 
-AuthRemote.prototype.getServerIds = function(acccountIDS){
+AuthRemote.prototype.getServerIds = function(uids){
 	var results = [];
-	for (var i = 0; i < acccountIDS.length; i++) {
-		var res = this.uidMap[acccountIDS[i]];
+	for (var i = 0; i < uids.length; i++) {
+		var res = this.uidMap[uids[i]];
 		if (res != undefined){
 			results.push(res[sid]);
 		}
