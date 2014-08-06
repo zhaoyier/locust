@@ -13,11 +13,12 @@ var AuthRemote = function(app){
 	this.tokenMap = {};
 }
 
-AuthRemote.prototype.entryGame = function(uid, sid, ip, callback){
+AuthRemote.prototype.entryGame = function(uid, sid, ip){
+	console.log("*******entryGame*******:\t", this.uidMap, "host:\t", ip);
 	var date = new Date();
 	var record = {sid: sid, host: ip, time: date.getTime()};
 	this.uidMap[uid] = record;
-	console.log("*******entryGame*******:\t", this.uidMap);
+	
 }
 
 AuthRemote.prototype.getServerId = function(uid){
