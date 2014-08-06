@@ -14,7 +14,7 @@ var AuthRemote = function(app){
 }
 
 AuthRemote.prototype.entryGame = function(uid, sid, ip){
-	console.log("*******entryGame*******:\t", this.uidMap, "host:\t", ip);
+	console.log("*******entryGame*******:\t", this.uidMap, "uid:\t", uid, "sid:\t", sid, "host:\t", ip);
 	var date = new Date();
 	var record = {sid: sid, host: ip, time: date.getTime()};
 	this.uidMap[uid] = record;
