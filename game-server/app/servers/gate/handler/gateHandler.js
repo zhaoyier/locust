@@ -24,7 +24,7 @@ Handler.prototype.queryEntry = function(msg, session, next) {
         	var ip = session.__session__.__socket__.remoteAddress.ip;
             //var token = createToken(ip, uid);
             var res = dispatcher.dispatch(uid, connectors);
-			this.app.rpc.auth.authRemote.addToken(session, uid, token);
+			//this.app.rpc.auth.authRemote.addToken(session, uid, token);
 
             //next(null, {code: 200, host: res.host, port: res.clientPort, token: token});
             next(null, {code: 200, host: res.host, port: res.clientPort});

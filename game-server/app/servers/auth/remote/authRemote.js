@@ -9,7 +9,7 @@ module.exports = function(app){
 
 var AuthRemote = function(app){
 	this.app = app;
-	this.accountMap = {};
+	this.accountIDMap = {};
 	this.tokenMap = {};
 }
 
@@ -37,11 +37,12 @@ AuthRemote.prototype.checkToke = function(username, token){
 AuthRemote.prototype.entryGame = function(accountID, sid, ip, callback){
 	var date = new Date();
 	var record = {sid: sid, host: ip, time: date.getTime()};
-	this.accountMap[accountID] = record;
+	this.accountIDMap[accountID] = record;
+	console.log("*******entryGame*******:\t", this.accountIDMap);
 }
 
 AuthRemote.prototype.getServerId = function(accountID){
-	var res = this.accountMap[accountID];
+	var res = this.accountIDMap[accountID];
 
 	if (res === undefined){
 		return null;
@@ -54,7 +55,7 @@ AuthRemote.prototype.getServerId = function(accountID){
 AuthRemote.prototype.getServerIds = function(acccountIDS){
 	var results = [];
 	for (var i = 0; i < acccountIDS.length; i++) {
-		var res = this.accountMap[acccountIDS[i]];
+		var res = this.accountIDMap[acccountIDS[i]];
 		if (res != undefined){
 			results.push(res[sid]);
 		}
