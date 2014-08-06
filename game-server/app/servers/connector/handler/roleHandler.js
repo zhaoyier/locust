@@ -16,7 +16,7 @@ Handler.prototype.createPlayer = function(msg, session, next){
 			return ;
 		}
 
-		userDao.createPlayer(msg.wuid, function(error, player){
+		userDao.createPlayer(msg.from, function(error, player){
 			next(null, {code: 200, avatar: player.avatar});
 			return 0;
 		})
@@ -36,7 +36,7 @@ Handler.prototype.getPlayer = function(msg, session, next){
 }
 
 Handler.prototype.updatePlayer = function(msg, session, next){
-	
+
 }
 
 Handler.prototype.queryMessage = function(msg, session, next){
@@ -64,6 +64,6 @@ Handler.prototype.queryShop = function(msg, session, next){
 }
 
 Handler.prototype.consumeShop = function(msg, session, next){
-	
+
 }
 
