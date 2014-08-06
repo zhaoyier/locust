@@ -4,7 +4,7 @@
              {"id":"connector-server-1", "host":"10.96.36.181", "port":4050, "clientPort": 3050, "frontend": true}
          ],
           "game":[
-          {"id":"connector-server-1", "host":"10.96.36.181", "port":8000, "clientPort": 8050, "frontend": true}
+          {"id":"game-server-1", "host":"10.96.36.181", "port":8000}
         ],
         "chat":[
              {"id":"chat-server-1", "host":"10.96.36.181", "port":6050}
@@ -21,7 +21,7 @@
              {"id":"connector-server-1", "host":"10.96.36.181", "port":4050, "clientPort": 3050, "frontend": true}
          ],
          "game":[
-          {"id":"connector-server-1", "host":"10.96.36.181", "port":8000, "clientPort": 8050, "frontend": true}
+          {"id":"game-server-1", "host":"10.96.36.181", "port":8000}
         ]
         "chat":[
              {"id":"chat-server-1", "host":"10.96.36.181", "port":6050}
