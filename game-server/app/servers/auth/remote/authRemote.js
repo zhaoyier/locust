@@ -56,7 +56,7 @@ AuthRemote.prototype.kick = function(uid, sid, name){
 	console.log('********kick************:\t', uid, sid, name);
 	var res = this.uidMap[uid];
 	if (res !== undefined){
-		delete this.uidMap[uid];
+		//delete this.uidMap[uid];
 	}
 }
 
