@@ -2,7 +2,10 @@
     "development":{
         "connector":[
              {"id":"connector-server-1", "host":"10.96.36.181", "port":4050, "clientPort": 3050, "frontend": true}
-         ],  
+         ],
+         "game":[
+             {"id":"game-server-1", "host":"10.96.36.181", "port":8050}
+        ], 
         "chat":[
              {"id":"chat-server-1", "host":"10.96.36.181", "port":6050}
         ],  
@@ -16,7 +19,10 @@
     "production":{
         "connector":[
              {"id":"connector-server-1", "host":"10.96.36.181", "port":4050, "clientPort": 3050, "frontend": true}
-         ],  
+         ],
+        "game":[
+             {"id":"game-server-1", "host":"10.96.36.181", "port":8050}
+        ], 
         "chat":[
              {"id":"chat-server-1", "host":"10.96.36.181", "port":6050}
         ],  
