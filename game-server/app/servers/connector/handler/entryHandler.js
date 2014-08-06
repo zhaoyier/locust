@@ -28,6 +28,7 @@ Handler.prototype.entry = function(msg, session, next) {
       session.on('closed', onUserLeave.bind(null, self.app));
 
       var ip = session.__session__.__socket__.remoteAddress.ip;
+      console.log("**********entry***********:\t", ip);
       self.app.rpc.auth.authRemote.entryGame(session, res.uid, self.app.get('serverId'), ip);
       next(null, {code: 200, uid: res.uid});
     }
