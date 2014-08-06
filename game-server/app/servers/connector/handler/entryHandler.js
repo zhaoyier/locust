@@ -29,8 +29,9 @@ Handler.prototype.entry = function(msg, session, next) {
 
       var ip = session.__session__.__socket__.remoteAddress.ip;
       console.log("**********entry***********:\t", ip);
-      self.app.rpc.auth.authRemote.entryGame(session, res.uid, self.app.get('serverId'));
-      next(null, {code: 200, uid: res.uid});
+      self.app.rpc.auth.authRemote.entryGame(session, res.uid, self.app.get('serverId'), ip, function(error){
+        next(null, {code: 200, uid: res.uid});
+      });      
     }
     else {
       next(null, {code: 201})
