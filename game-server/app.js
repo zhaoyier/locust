@@ -23,6 +23,14 @@ app.configure('production|development', 'gate', function(){
         }); 
 });
 
+app.configure('production|development', 'game', function(){
+    app.set('connectorConfig',
+        {   
+            connector : pomelo.connectors.hybridconnector,
+            useProtobuf : true
+        }); 
+});
+
 /*
 app.configure('production|development', 'auth|chat', function(){
 	app.route('chat', routeUtil.chat);
