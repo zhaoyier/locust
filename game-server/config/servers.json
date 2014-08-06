@@ -22,7 +22,7 @@
          ],
          "game":[
           {"id":"game-server-1", "host":"10.96.36.181", "port":8000}
-        ]
+        ],
         "chat":[
              {"id":"chat-server-1", "host":"10.96.36.181", "port":6050}
         ],  
