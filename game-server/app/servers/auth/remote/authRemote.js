@@ -9,7 +9,7 @@ module.exports = function(app){
 
 var AuthRemote = function(app){
 	this.app = app;
-	this.accountIDMap = {};
+	this.uidMap = {};
 	this.tokenMap = {};
 }
 
@@ -34,15 +34,15 @@ AuthRemote.prototype.checkToke = function(username, token){
 	return Code.OK;
 }*/
 
-AuthRemote.prototype.entryGame = function(accountID, sid, ip, callback){
+AuthRemote.prototype.entryGame = function(uid, sid, ip, callback){
 	var date = new Date();
 	var record = {sid: sid, host: ip, time: date.getTime()};
-	this.accountIDMap[accountID] = record;
-	console.log("*******entryGame*******:\t", this.accountIDMap);
+	this.uidMap[uid] = record;
+	console.log("*******entryGame*******:\t", this.uidMap);
 }
 
-AuthRemote.prototype.getServerId = function(accountID){
-	var res = this.accountIDMap[accountID];
+AuthRemote.prototype.getServerId = function(uid){
+	var res = this.uidMap[uid];
 
 	if (res === undefined){
 		return null;
@@ -52,10 +52,18 @@ AuthRemote.prototype.getServerId = function(accountID){
 	}
 }
 
+AuthRemote.prototype.kick = function(uid, sid, name){
+	console.log('********kick************:\t', uid, sid, name);
+	var res = this.uidMap[uid];
+	if (res !== undefined){
+		delete this.uidMap[uid];
+	}
+}
+
 AuthRemote.prototype.getServerIds = function(acccountIDS){
 	var results = [];
 	for (var i = 0; i < acccountIDS.length; i++) {
-		var res = this.accountIDMap[acccountIDS[i]];
+		var res = this.uidMap[acccountIDS[i]];
 		if (res != undefined){
 			results.push(res[sid]);
 		}
