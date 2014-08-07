@@ -1,34 +1,36 @@
 var message = require('../../consts/message');
 
+var code = require('../code/xxCode');
+
 var handler = module.exports;
 
 handler.createHandCardsAsPattern = function(residueCards, pattern, callback){
 	switch(pattern){
-		case message.XXType.XX_DANZHANG:
+		case code.Type.DANZHANG:
 			{
 				break;
 			} 
-		case message.XXType.XX_DUIZI:
+		case code.Type.DUIZI:
 			{
 				break;
 			}
-		case message.XXType.XX_SHUNZI:
+		case code.Type.SHUNZI:
 			{
 				break;
 			}
-		case message.XXType.XX_JINHUA:
+		case code.Type.JINHUA:
 			{
 				break;
 			}
-		case message.XXType.XX_SHUNJIN:
+		case code.Type.SHUNJIN:
 			{
 				break;
 			}
-		case message.XXType.XX_BAOZI:
+		case code.Type.BAOZI:
 			{
 				break;
 			}
-		case message.XXType.XX_TESHU:
+		case code.Type.TESHU:
 			{
 				break;
 			}
@@ -68,33 +70,32 @@ handler.initPlayHandCards = function(residueCards, option){
  * */
 //handler.createXXBaozi = function(residueCards, cardValue){
 handler.createXXBaozi = function(residueCards){
-	var handCards = {cards: [], pattern: message.XXType.XX_BAOZI};
-	var cardValue = residueCards[this.createRandomZero(residueCards.length)];
+	var handCards = {cards: [], pattern: code.Type.BAOZI};
+	var cardValue = this.createRandomOne(code.Constant.MAX_CARD_VALUE);
 
 	while(true){
-		var cardNumber = this.calCardsAsValue(residueCards, this.analyseCardValue(cardValue));
-		if (cardNumber === 3){
-			for (var i = 0; i < message.XXConstant.CARD_COLOR; i++) {
-				var index = this.getCardIndex(residueCards, (i*message.XXConstant.HEX_VALUE+this.analyseCardValue(cardValue)));
-				if (index != message.XXConstant.CROSS_MAX_CARD){
-					handCards.cards.push(i*message.XXConstant.HEX_VALUE+this.analyseCardValue(cardValue));
+		var counterCard = this.cumulativeCardNumber(residueCards, cardValue);
+		if (counterCard === 3){
+			for (var i = 0; i < code.Constant.CARD_COLOR; ++i) {
+				var index = this.getCardIndexAsValue(residueCards, (i*code.Constant.HEX_VALUE+cardValue));
+				if (index !== null){
+					handCards.cards.push(residueCards[index]);
 					residueCards.splice(index, 1);
 				}
 			}
 			return handCards;
-		}
-		else if (cardNumber === 4){
+		} else if (counterCard === 4){
 			var abandonColor = this.createRandomZero(4);
-			for (var i = 0; i < 4; i++) {
+			for (var i = 0; i < code.Constant.CARD_COLOR; i++) {
 				if (i != abandonColor){
-					handCards.cards.push(i*message.XXConstant.HEX_VALUE+this.analyseCardValue(cardValue));
-					residueCards.splice(this.getCardIndex(residueCards, i*message.XXConstant.HEX_VALUE+this.analyseCardValue(cardValue)), 1);
+					var index = this.getCardIndexAsValue(residueCards, (i*code.Constant.HEX_VALUE+cardValue));
+					handCards.cards.push(residueCards[index]);
+					residueCards.splice(index, 1);
 				}
 			}
 			return handCards;
-		}
-		else {
-			cardValue = this.createRandomOne(message.XXConstant.MAX_CARD_VALUE);
+		} else {
+			cardValue = this.createRandomOne(code.Constant.MAX_CARD_VALUE);
 		}
 	}
 }
@@ -105,51 +106,51 @@ handler.createXXBaozi = function(residueCards){
 //handler.createXXDuizi = function(residueCards, cardValue){
 handler.createXXDuizi = function(residueCards){
 	var handCards = {cards:[], pattern: message.XXType.XX_DUIZI};
-	var cardValue = residueCards[this.createRandomZero(residueCards.length)];
+	var cardValue = this.createRandomOne(code.Constant.MAX_CARD_VALUE);
 
 	while(true){
-		var cardNumber = this.calCardsAsValue(residueCards, this.analyseCardValue(cardValue));
-		if (cardNumber === 2){
-			for (var i = 0; i < message.XXConstant.CARD_COLOR; i++) {
-				var index = this.getCardIndex(residueCards, (i*message.XXConstant.HEX_VALUE+this.analyseCardValue(cardValue)));
-				if (index != message.XXConstant.CROSS_MAX_CARD){
-					handCards.cards.push(i*message.XXConstant.HEX_VALUE+this.analyseCardValue(cardValue));
+		var counterCard = this.cumulativeCardNumber(residueCards, cardValue);
+		if (counterCard === 2){
+			for (var i = 0; i < code.Constant.CARD_COLOR; i++) {
+				var index = this.getCardIndexAsValue(residueCards, (i*code.Constant.HEX_VALUE+cardValue));
+				if (index <= null){
+					handCards.cards.push(residueCards[index]);
 					residueCards.splice(index, 1);
 				}	
 			}
-			while(true){
-				var selectCardIndex = this.createRandomZero(residueCards.length);
-				if (this.analyseCardValue(residueCards[selectCardIndex]) != this.analyseCardValue(cardValue)){
-					handCards.cards.push(residueCards[selectCardIndex]);
-					residueCards.splice(selectCardIndex, 1);
-					return handCards;
-				}
-			}
-		}
-		else if (cardNumber >= 3){
-			var colorCards = this.getCardsAsValue(residueCards, cardValue);
-			var selectValueCard = this.createRandomZero(colorCards.length);
-			handCards.cards.push(colorCards[selectValueCard]);
-			this.removeCardAsValue(residueCards, colorCards[selectValueCard]);
-			colorCards.splice(selectValueCard, 1);
 
-			selectValueCard = this.createRandomZero(colorCards.length);
-			handCards.cards.push(colorCards[selectValueCard]);
-			this.removeCardAsValue(residueCards, colorCards[selectValueCard]);
-			colorCards.splice(selectValueCard, 1);
 			while(true){
-				var selectCardIndex = this.createRandomZero(residueCards.length);
-				if (this.analyseCardValue(residueCards[selectCardIndex]) != this.analyseCardValue(cardValue)){
-					handCards.cards.push(residueCards[selectCardIndex]);
-					residueCards.splice(selectCardIndex, 1);
+				var singleCardIndex = this.createRandomZero(residueCards.length);
+				if (this.analyseCardValue(residueCards[singleCardIndex]) !== cardValue){
+					handCards.cards.push(residueCards[singleCardIndex]);
+					residueCards.splice(singleCardIndex, 1);
+					return handCards;
+				}
+			}			
+		} else if (counterCard >= 3){
+			var indexArray = this.getCardIndexArrayAsValue(residueCards, cardValue);
+			var index = indexArray[this.createRandomZero(indexArray.length)];
+			handCards.cards.push(residueCards[index]);
+			residueCards.splice(index, 1);
+
+			indexArray = this.getCardIndexArrayAsValue(residueCards, cardValue);
+			index = indexArray[this.createRandomZero(indexArray.length)];
+			handCards.cards.push(residueCards[index]);
+			residueCards.splice(index, 1);
+
+			while(true){
+				var singleCardIndex = this.createRandomZero(residueCards.length);
+				if (this.analyseCardValue(residueCards[singleCardIndex]) !== cardValue){
+					handCards.cards.push(residueCards[singleCardIndex]);
+					residueCards.splice(singleCardIndex, 1);
 					return handCards;
 				}
 			}
-		}
-		else {
-			cardValue = this.createRandomOne(message.XXConstant.MAX_CARD_VALUE);
+		} else {
+			cardValue = this.createRandomOne(code.Constant.MAX_CARD_VALUE);
 		}
 	}
+
 }
 
 //handler.createXXShunjin = function(residueCards, cardValue){
@@ -157,62 +158,56 @@ handler.createXXShunjin = function(residueCards){
 	var handCards = {cards:[], pattern: message.XXType.XX_SHUNJIN};
 	var cardValue = residueCards[this.createRandomZero(residueCards.length)];
 
-	while(true){
+	while (true){
 		if (this.analyseCardValue(cardValue) <= 2){
 			var counter = 0;
-			for (var i=cardValue; i<cardValue+3; ++i){
-				var index = this.getCardIndex(residueCards, i);
-				if (index != message.XXConstant.CROSS_MAX_CARD){
+			for (var i = cardValue; i < cardValue+3; i++) {
+				if (this.getCardIndexAsValue(residueCards, i) !== null){
 					++counter;
-				}	
+				}
 			}
 			if (counter === 3){
-				for (var i=cardValue; i<cardValue+3; ++i){
-					var index = this.getCardIndex(residueCards, i);
+				for (var i = cardValue; i < cardValue+3; i++) {
+					var index = this.getCardIndexAsValue(residueCards, i);
 					handCards.cards.push(residueCards[index]);
-					residueCards.splice(index, 1);
+					residueCards.splice(index, 1);	
 				}
 				return handCards;
+			} else {
+				cardValue = residueCards[this.createRandomZero(residueCards.length)];
 			}
-			else {
-				cardValue = residueCards[this.createRandomOne(residueCards.length)];
-			}
-		}
-		else {
+		} else {
 			var subCounter = 0, addCounter = 0;
-			for	(var i=cardValue-2; i<cardValue+1; ++i){
-				if (this.getCardIndex(residueCards, i) != message.XXConstant.CROSS_MAX_CARD){
+			for (var i = cardValue-2; i <= cardValue; i++) {
+				if (this.getCardIndexAsValue(residueCards, i) !== null){
 					++subCounter;
 				}
 			}
 			if (subCounter === 3){
-				for (var i=cardValue-2; i<cardValue+1; ++i){
-					var index = this.getCardIndex(residueCards, i);
+				for (var i = cardValue-2; i <= cardValue; i++) {
+					var index = this.getCardIndexAsValue(residueCards, i);
 					handCards.cards.push(residueCards[index]);
 					residueCards.splice(index, 1);
 				}
 				return handCards;
-			}
-			else {
-				for (var i=cardValue; i<cardValue+3; ++i){
-					var index = this.getCardIndex(residueCards, i);
-					if (this.getCardIndex(residueCards, i) != message.XXConstant.CROSS_MAX_CARD){
+			} else {
+				for (var i = cardValue; i < cardValue+3; ++i){
+					if (this.getCardIndexAsValue(residueCards, i) !== null){
 						++addCounter;
-					}	
+					}
 				}
 				if (addCounter === 3){
-					for (var i=cardValue; i<cardValue+3; ++i){
-						var index = this.getCardIndex(residueCards, i);
+					for (var i = cardValue; i < cardValue+3; i++) {
+						var index = this.getCardIndexAsValue(residueCards, i);
 						handCards.cards.push(residueCards[index]);
 						residueCards.splice(index, 1);
 					}
 					return handCards;
-				}
-				else {
-					cardValue = this.createRandomOne(message.XXConstant.MAX_CARD_VALUE);
+				} else {
+					cardValue = residueCards[this.createRandomZero(residueCards.length)];
 				}
 			}
-		}	
+		}
 	}
 }
 
@@ -220,84 +215,104 @@ handler.createXXShunjin = function(residueCards){
 handler.createXXJinhua = function(residueCards){
 	var handCards = {cards:[], pattern: message.XXType.XX_JINHUA};
 	var cardValue = residueCards[this.createRandomZero(residueCards.length)];
+
 	while (true){
-		var sameColorCards = this.getCardsAsColor(residueCards, this.analyseCardColor(cardValue));
-		if (sameColorCards.length >= message.XXConstant.HAND_CARDS_NUM){
-			for (var i = 0; i < message.XXConstant.HAND_CARDS_NUM; ++i) {
-				var selectColorCard = this.createRandomZero(sameColorCards.length);
-				handCards.cards.push(sameColorCards[selectColorCard]);
-				this.removeCardAsValue(residueCards, sameColorCards[selectColorCard]);
-				sameColorCards.splice(selectColorCard, 1);
+		var indexArray = this.getCardIndexArrayAsColor(residueCards, this.analyseCardColor(cardValue));
+		if (indexArray >= 3){
+			for (var i = 0; i < code.Constant.HAND_CARD; i++) {
+				var index = this.createRandomZero(indexArray.length);
+				var selectCard = residueCards[indexArray[index]];
+				handCards.cards.push(selectCard);
+				indexArray.splice(index, 1);	
+				this.removeCardAsCardValue(residueCards, selectCard);
+			}
+			handCards.cards.sort(sortNumber);
+			if ((handCards.cards[0]+1 === handCards.cards[1]) && (handCards.cards[1]+1 === handCards.cards[2])){
+				handCards.pattern = code.Type.SHUNJIN;
 			}
 			return handCards;
+		} else {
+			cardValue = residueCards[this.createRandomZero(residueCards.length)];
 		}
-		else {
-			cardValue = residueCards[this.createRandomOne(residueCards.length)];
-		}
-	}	
+	}
 }
 
 //handler.creatXXShunzi = function(residueCards, cardValue){
 handler.createXXShunzi = function(residueCards){
 	var handCards = {cards:[], pattern: message.XXType.XX_SHUNZI};
-	var cardValue = residueCards[this.createRandomZero(residueCards.length)];
-	while(true){
-		if (this.analyseCardValue(cardValue) <= 2){
+	var cardValue = this.createRandomOne(code.Constant.MAX_CARD_VALUE);
+
+	while (true){
+		if (cardValue <= 2){
 			var counter = 0;
-			for (var i = cardValue; i < cardValue+3; ++i) {
-				var sameValueCards = this.getCardsAsValue(residueCards, i);
-				if (sameValueCards.length >= 1){
+			for (var i = cardValue; i < cardValue+3; i++) {
+				var indexArray = this.getCardIndexArrayAsValue(residueCards, i);
+				if (indexArray.length >= 1){
 					++counter;
-				}
+				}	
 			}
 			if (counter === 3){
-				for (var i = cardValue; i < cardValue+3; ++i) {
-					var sameValueCards = this.getCardsAsValue(residueCards, i);
-					var selectCardIndex = this.createRandomZero(sameValueCards.length);
-					handCards.cards.push(sameValueCards[selectCardIndex]);
-					this.removeCardAsValue(residueCards, sameValueCards[selectCardIndex]);
-				}
-				return handCards;
-			}
-			else {
-				cardValue = residueCards[this.createRandomOne(residueCards.length)];
-			}
-		}
-		else {
-			var subCounter = 0, addCounter = 0;
-			for (var i = cardValue-2; i < cardValue+1; i++) {
-				var sameValueCards = this.getCardsAsValue(residueCards, i);
-				if (sameValueCards.length >= 1){
-					++subCounter;
-				}
-			}
-			if (subCounter === 3){
-				for (var i = cardValue-2; i < cardValue+1; i++) {
-					var sameValueCards = this.getCardsAsValue(residueCards, i);
-					var selectCardIndex = this.createRandomZero(sameValueCards.length);
-					handCards.cards.push(sameValueCards[selectCardIndex]);
-					this.removeCardAsValue(residueCards, sameValueCards[selectCardIndex]);
-				}
-				return handCards;
-			}
-			else {
 				for (var i = cardValue; i < cardValue+3; i++) {
-					var sameValueCards = this.getCardsAsValue(residueCards,i);
-					if (sameValueCards.length >= 1){
+					var indexArray = this.getCardIndexArrayAsValue(residueCards, i);
+					var index = indexArray[this.createRandomZero(indexArray.length)];
+					handCards.cards.push(residueCards[index]);
+					residueCards.splice(index, 1);
+				}
+				handCards.cards.sort(sortNumber);
+				if ((this.analyseCardColor(handCards.cards[0]) === this.analyseCardColor(handCards.cards[1])) 
+					&& (this.analyseCardColor(handCards.cards[1]) === this.analyseCardColor(handCards.cards[2]))){
+					handCards.pattern = code.Type.SHUNJIN;
+				}
+				return handCards;
+			} else {
+				cardValue = this.createRandomOne(code.Constant.MAX_CARD_VALUE);
+			}
+		} else {
+			var subCounter = 0, addCounter = 0;
+
+			for (var i = cardValue-2; i <= cardValue; i++) {
+				var indexArray = this.getCardIndexArrayAsValue(residueCards, i);
+				if (indexArray.length >= 1){
+					++subCounter;
+				}	
+			}
+
+			if (subCounter === 3){
+				for (var i = cardValue-2; i <= cardValue; i++) {
+					var indexArray = this.getCardIndexArrayAsValue(residueCards, i);
+					var index = indexArray[this.createRandomZero(indexArray.length)];
+					handCards.cards.push(residueCards[index]);
+					residueCards.splice(index, 1);
+				}
+				handCards.cards.sort(sortNumber);
+				if ((this.analyseCardColor(handCards.cards[0]) === this.analyseCardColor(handCards.cards[1])) 
+					&& (this.analyseCardColor(handCards.cards[1]) === this.analyseCardColor(handCards.cards[2]))){
+					handCards.pattern = code.Type.SHUNJIN;
+				}
+				return handCards;
+
+			} else {
+				for (var i = cardValue; i < cardValue+3; i++) {
+					var indexArray = this.getCardIndexArrayAsValue(residueCards, i);
+					if (indexArray.length >= 1){
 						++addCounter;
 					}	
 				}
+
 				if (addCounter === 3){
 					for (var i = cardValue; i < cardValue+3; i++) {
-						var sameValueCards = this.getCardsAsValue(residueCards, i);
-						var selectCardIndex = this.createRandomZero(sameValueCards.length);
-						handCards.cards.push(sameValueCards[selectCardIndex]);
-						this.removeCardAsValue(residueCards, sameValueCards[selectCardIndex]);
+						var indexArray = this.getCardIndexArrayAsValue(residueCards, i);
+						var index = indexArray[this.createRandomZero(indexArray.length)];
+						handCards.cards.push(residueCards[index]);
+						residueCards.splice(index, 1);
+					}
+					if ((this.analyseCardColor(handCards.cards[0]) === this.analyseCardColor(handCards.cards[1])) 
+					&& (this.analyseCardColor(handCards.cards[1]) === this.analyseCardColor(handCards.cards[2]))){
+						handCards.pattern = code.Type.SHUNJIN;
 					}
 					return handCards;
-				}
-				else {
-					cardValue = residueCards[this.createRandomOne(residueCards.length)];
+				} else {
+					cardValue = this.createRandomOne(code.Constant.MAX_CARD_VALUE);
 				}
 			}
 		}
@@ -346,11 +361,9 @@ handler.createXXDanzhang = function(residueCards){
 				if ((this.analyseCardColor(handCards.cards[0]) != this.analyseCardColor(handCards.cards[1]))
 					&&(this.analyseCardColor(handCards.cards[0]) != this.analyseCardColor(handCards.cards[2]))
 					&&(this.analyseCardColor(handCards.cards[1]) != this.analyseCardColor(handCards.cards[2]))){
-					//return handCards.pattern = message.XXType.XX_TESHU;
-					return {cards: handCards.cards, pattern: message.XXType.XX_TESHU};
+					return {cards: handCards.cards, pattern: code.Type.TESHU};
 				}
 			}
-
 			return handCards;	
 		}
 	}
@@ -405,25 +418,25 @@ handler.analyseCardColor = function(cardValue){
 	return parseInt(cardValue/message.XXRefer.REFER_HEX);
 }
 
-/*
- * *function: 根据卡牌数值获取其下标
- * */
-handler.getCardIndex = function(residueCards, cardValue){
-	for (var i = 0; i < residueCards.length; i++) {
-		if (residueCards[i] === cardValue){
-			return i;
-		}
-	}
-	return message.XXConstant.CROSS_MAX_CARD;
-}
+
 
 /*
 *function: 检查四色卡牌是否存在
 **/
 handler.calCardsAsValue = function(residueCards, cardValue){
 	var counter = 0;
-	for (var i = 0; i < message.XXConstant.CARD_COLOR; ++i) {
+	for (var i = 0; i < code.Constant.CARD_COLOR; ++i) {
 		if (this.getCardIndex(residueCards, (i*message.XXConstant.HEX_VALUE+this.analyseCardValue(cardValue))) != message.XXConstant.CROSS_MAX_CARD){
+			++counter;
+		}
+	}
+	return counter;
+}
+
+handler.cumulativeCardNumber = function(residueCards, cardValue){
+	var counter = 0;
+	for (var i = 0; i < code.Constant.CARD_COLOR; i++) {
+		if (this.getCardIndexAsValue(residueCards, (i*code.Constant.HEX_VALUE+cardValue)) !== null){
 			++counter;
 		}
 	}
@@ -442,6 +455,72 @@ handler.getCardsAsValue = function(residueCards, cardValue){
 		}
 	}
 	return valueCards;
+}
+
+/*
+ * *function: 根据卡牌数值获取其下标
+ * */
+handler.getCardIndexAsValue = function(residueCards, cardValue){
+	for (var i = 0; i < residueCards.length; i++) {
+		if (residueCards[i] === cardValue){
+			return i;
+		}
+	}
+	return null;
+}
+
+/*
+*funtion: 根据卡牌值获取所有下标值
+**/
+handler.getCardIndexArrayAsValue = function(residueCards, cardValue){
+	var cardIndexArray = [];
+
+	for (var i = 0; i < code.Constant.CARD_COLOR; i++) {
+		var index = this.getCardIndexAsValue(residueCards, (i*code.Constant.HEX_VALUE+cardValue));
+		if (index !== null){
+			cardIndexArray.push(index);
+		}	
+	}
+	return cardIndexArray;
+}
+
+/*
+*function: 根据卡牌大小获取所有卡牌
+**/
+handler.getCardArrayAsCardValue = function (residueCards, cardValue){
+	var cardArray = [];
+	for (var i = 0; i < code.Constant.CARD_COLOR; i++) {
+		var index = this.getCardIndexAsValue(residueCards, (i*code.Constant.HEX_VALUE+this.analyseCardValue(cardValue)));
+		if (index !== null) {
+			cardArray.push(residueCards[index]);
+		}
+	}
+	return cardArray;
+}
+/*
+*funtion: 根据卡牌色获取所有下标
+**/
+handler.getCardIndexAsColor = function (residueCards, cardColor){
+	for (var i = 0; i < residueCards.length; i++) {
+		if (this.analyseCardColor(residueCards[i]) === cardColor){
+			return i;
+		}
+	}
+	return null;
+}
+
+/*
+*funtion: 根据卡牌色获取所有下标
+**/
+handler.getCardIndexArrayAsColor = function(residueCards, cardColor){
+	var cardIndexArray = [];
+
+	for (var i = 0; i < residueCards.length; i++) {
+		if (this.analyseCardColor(residueCards[i]) === cardColor){
+			cardIndexArray.push(i);
+		}
+	}
+	return cardIndexArray;
 }
 
 /*
@@ -468,6 +547,17 @@ handler.getCardsArrayAsValue = function(handCards){
 	return handCardsValue.sort(sortNumber);
 }
 
+/*
+*funtion: 根据卡牌值删除卡牌
+**/
+handler.removeCardAsCardValue = function(residueCards, cardValue){
+	for (var i = 0; i < residueCards.length; i++) {
+		if (residueCards[i] === cardValue){
+			residueCards.splice(i, 1);
+			return ;
+		}
+	}
+}
 
 /*
 *function: 根据卡牌大小删除
