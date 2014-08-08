@@ -1,5 +1,3 @@
-var message = require('../../consts/message');
-
 var code = require('../code/xxCode');
 
 var handler = module.exports;
@@ -40,7 +38,7 @@ handler.createHandCardsAsPattern = function(residueCards, pattern, callback){
 	}
 }
 
-handler.initPlayHandCards = function(residueCards, option){
+handler.creatHandCard = function(residueCards, option){
 	//console.log(residueCards);
 	var randomNum = this.createRandomOne(100);
 	//console.log("randomNum:\t", randomNum);
@@ -105,7 +103,7 @@ handler.createXXBaozi = function(residueCards){
 **/
 //handler.createXXDuizi = function(residueCards, cardValue){
 handler.createXXDuizi = function(residueCards){
-	var handCards = {cards:[], pattern: message.XXType.XX_DUIZI};
+	var handCards = {cards:[], pattern: code.Type.DUIZI};
 	var cardValue = this.createRandomOne(code.Constant.MAX_CARD_VALUE);
 
 	while(true){
@@ -155,7 +153,7 @@ handler.createXXDuizi = function(residueCards){
 
 //handler.createXXShunjin = function(residueCards, cardValue){
 handler.createXXShunjin = function(residueCards){
-	var handCards = {cards:[], pattern: message.XXType.XX_SHUNJIN};
+	var handCards = {cards:[], pattern: code.Type.SHUNJIN};
 	var cardValue = residueCards[this.createRandomZero(residueCards.length)];
 
 	while (true){
@@ -213,7 +211,7 @@ handler.createXXShunjin = function(residueCards){
 
 //handler.createXXJinhua = function(residueCards, cardValue){
 handler.createXXJinhua = function(residueCards){
-	var handCards = {cards:[], pattern: message.XXType.XX_JINHUA};
+	var handCards = {cards:[], pattern: code.Type.JINHUA};
 	var cardValue = residueCards[this.createRandomZero(residueCards.length)];
 
 	while (true){
@@ -239,7 +237,7 @@ handler.createXXJinhua = function(residueCards){
 
 //handler.creatXXShunzi = function(residueCards, cardValue){
 handler.createXXShunzi = function(residueCards){
-	var handCards = {cards:[], pattern: message.XXType.XX_SHUNZI};
+	var handCards = {cards:[], pattern: code.Type.SHUNZI};
 	var cardValue = this.createRandomOne(code.Constant.MAX_CARD_VALUE);
 
 	while (true){
@@ -320,7 +318,7 @@ handler.createXXShunzi = function(residueCards){
 }
 
 handler.createXXDanzhang = function(residueCards){
-	var handCards = {cards:[], pattern: message.XXType.XX_DANZHANG};
+	var handCards = {cards:[], pattern: code.Type.DANZHANG};
 
 	while (true){
 		var index = this.createRandomZero(residueCards.length);
@@ -370,35 +368,35 @@ handler.createXXDanzhang = function(residueCards){
 }
 
 handler.createXXTeshu = function(residueCards){
-	var handCards = {cards:[], pattern: message.XXType.XX_TESHU};
+	var handCards = {cards:[], pattern: code.Type.TESHU};
 
-	var selectCardTwo = this.getCardsAsValue(residueCards, 2);
-	var selectCardThree = this.getCardsAsValue(residueCards, 3);
-	var selectCardFive = this.getCardsAsValue(residueCards, 5);
+	var selectCardTwo = this.getCardArrayAsCardValue(residueCards, 2);
+	var selectCardThree = this.getCardArrayAsCardValue(residueCards, 3);
+	var selectCardFive = this.getCardArrayAsCardValue(residueCards, 5);
 	//console.log(selectCardTwo, selectCardThree, selectCardFive);
 	if ((selectCardTwo.length === 0)||(selectCardThree.length === 0)||(selectCardFive.length === 0)){
 		return this.createXXJinhua(residueCards);
 	}
 	else {
-		var randomCardIndex = this.createRandomZero(selectCardTwo.length);
-		handCards.cards.push(selectCardTwo[randomCardIndex]);
-		this.removeCardAsValue(residueCards, selectCardTwo[randomCardIndex]);
+		var index = this.createRandomZero(selectCardTwo.length);
+		handCards.cards.push(selectCardTwo[index]);
+		this.removeCardAsCardValue(residueCards, selectCardTwo[index]);
 
-		var randomCardIndex = this.createRandomZero(selectCardThree.length);
-		handCards.cards.push(selectCardThree[randomCardIndex]);
-		this.removeCardAsValue(residueCards, selectCardThree[randomCardIndex]);
+		index = this.createRandomZero(selectCardThree.length);
+		handCards.cards.push(selectCardThree[index]);
+		this.removeCardAsCardValue(residueCards, selectCardThree[index]);
 	
-		var randomCardIndex = this.createRandomZero(selectCardFive.length);
-		handCards.cards.push(selectCardFive[randomCardIndex]);
-		this.removeCardAsValue(residueCards, selectCardFive[randomCardIndex]);
+		index = this.createRandomZero(selectCardFive.length);
+		handCards.cards.push(selectCardFive[index]);
+		this.removeCardAsCardValue(residueCards, selectCardFive[index]);
 	
 		if ((this.analyseCardColor(handCards.cards[0]) != this.analyseCardColor(handCards.cards[1]))
 			&& (this.analyseCardColor(handCards.cards[0]) != this.analyseCardColor(handCards.cards[2]))
 			&& (this.analyseCardColor(handCards.cards[1]) != this.analyseCardColor(handCards.cards[2]))){
-			return {cards: handCards.cards, pattern: message.XXType.XX_TESHU};
+			return {cards: handCards.cards, pattern: code.Type.TESHU};
 		}
 		else {
-			return {cards: handCards.cards, pattern: message.XXType.XX_DANZHANG};
+			return {cards: handCards.cards, pattern: code.Type.DANZHANG};
 		}
 	}
 
@@ -408,53 +406,27 @@ handler.createXXTeshu = function(residueCards){
 *function: 解析卡牌数值大小
 **/
 handler.analyseCardValue = function(cardValue){
-	return parseInt(cardValue%message.XXRefer.REFER_HEX);
+	return parseInt(cardValue%code.Constant.HEX_VALUE);
 }
 
 /*
 *function: 解析卡牌花色
 **/
 handler.analyseCardColor = function(cardValue){
-	return parseInt(cardValue/message.XXRefer.REFER_HEX);
+	return parseInt(cardValue/code.Constant.HEX_VALUE);
 }
-
-
 
 /*
-*function: 检查四色卡牌是否存在
-**/
-handler.calCardsAsValue = function(residueCards, cardValue){
-	var counter = 0;
-	for (var i = 0; i < code.Constant.CARD_COLOR; ++i) {
-		if (this.getCardIndex(residueCards, (i*message.XXConstant.HEX_VALUE+this.analyseCardValue(cardValue))) != message.XXConstant.CROSS_MAX_CARD){
-			++counter;
-		}
-	}
-	return counter;
-}
-
+*function: 根据卡牌值累加各色数
+***/
 handler.cumulativeCardNumber = function(residueCards, cardValue){
 	var counter = 0;
 	for (var i = 0; i < code.Constant.CARD_COLOR; i++) {
-		if (this.getCardIndexAsValue(residueCards, (i*code.Constant.HEX_VALUE+cardValue)) !== null){
+		if (this.getCardIndexAsValue(residueCards, (i*code.Constant.HEX_VALUE+this.analyseCardValue(cardValue))) !== null){
 			++counter;
 		}
 	}
 	return counter;
-}
-
-/*
-*function: 获取相同大小的牌
-**/
-handler.getCardsAsValue = function(residueCards, cardValue){
-	var valueCards = [];
-	for (var i=0; i<message.XXConstant.CARD_COLOR; ++i){
-		var index = this.getCardIndex(residueCards, (i*message.XXConstant.HEX_VALUE+this.analyseCardValue(cardValue)));
-		if (index != message.XXConstant.CROSS_MAX_CARD){
-			valueCards.push(residueCards[index]);
-		}
-	}
-	return valueCards;
 }
 
 /*
@@ -524,19 +496,6 @@ handler.getCardIndexArrayAsColor = function(residueCards, cardColor){
 }
 
 /*
-*function: 获取相同花色的牌
-**/
-handler.getCardsAsColor = function(residueCards, cardColor){
-	var sameColorCards = [];
-	for (var i = 0; i < residueCards.length; i++) {
-		if (this.analyseCardColor(residueCards[i]) === cardColor){
-			sameColorCards.push(residueCards[i]);
-		}
-	}
-	return sameColorCards;
-}
-
-/*
 *function: 获取卡牌大小的数组
 **/
 handler.getCardsArrayAsValue = function(handCards){
@@ -560,19 +519,6 @@ handler.removeCardAsCardValue = function(residueCards, cardValue){
 }
 
 /*
-*function: 根据卡牌大小删除
-**/
-handler.removeCardAsValue = function(residueCards, cardValue){
-	var index = this.getCardIndex(residueCards, cardValue);
-	residueCards.splice(index, 1);	
-}
-/*
-*function: 根据卡牌索引删除
-**/
-handler.removeCardAsIndex = function(residueCards, cardIndex){
-	residueCards.splice(cardIndex, 1);
-}
-/*
  * *function: 随机数生成
  * */
 handler.createRandomZero = function(base){
@@ -592,7 +538,7 @@ handler.getCardColor = function(cardValue){
 				return "方块";
 			}
 		case 1: {
-				return "梅花";
+				return "梅花";  
 			}
 		case 2: {
 				return "红桃";
@@ -612,10 +558,10 @@ handler.getCompareSize = function(ownCards, otherCards, initiative){
 	}
 
 	if (ownCards.pattern > otherCards.pattern){
-		return message.XXConstant.WIN;
+		return code.Card.WIN;
 	}
 	else if (ownCards.pattern < otherCards.pattern){
-		return message.XXConstant.LOSE;
+		return code.Card.LOSE;
 	}
 	else {
 		var ownCardsValue = this.getCardsArrayAsValue(ownCards);
@@ -623,16 +569,16 @@ handler.getCompareSize = function(ownCards, otherCards, initiative){
 
 		if (ownCards.pattern === 1){
 			if (ownCardsValue[2] != otherCardsValue[2]){
-				return (ownCardsValue[2]>otherCardsValue[2]) ? message.XXConstant.WIN: message.XXConstant.LOSE;
+				return (ownCardsValue[2]>otherCardsValue[2]) ? code.Card.WIN : code.Card.LOSE;
 			}
 			else if (ownCardsValue[1] != otherCardsValue[1]){
-				return (ownCardsValue[1]>otherCardsValue[1]) ? message.XXConstant.WIN: message.XXConstant.LOSE;
+				return (ownCardsValue[1]>otherCardsValue[1]) ? code.Card.WIN : code.Card.LOSE;
 			}
 			else if (ownCardsValue[0] != otherCardsValue[0]){
-				return (ownCardsValue[0]>otherCardsValue[0]) ? message.XXConstant.WIN: message.XXConstant.LOSE;
+				return (ownCardsValue[0]>otherCardsValue[0]) ? code.Card.WIN : code.Card.LOSE;
 			}
 			else {
-				return initiative ? message.XXConstant.WIN: message.XXConstant.LOSE;
+				return initiative ? code.Card.WIN: code.Card.LOSE;
 			}
 		}
 		else if (ownCards.pattern === 2){
@@ -642,56 +588,56 @@ handler.getCompareSize = function(ownCards, otherCards, initiative){
 				var ownDanValue = (ownCardsValue[0] === ownCardsValue[1]) ? ownCardsValue[2]: ownCardsValue[0];
 				var otherDanValue = (otherCardsValue[0] === otherCardsValue[1]) ? otherCardsValue[2]: otherCardsValue[0];
 				if (ownDanValue === otherDanValue){
-					return initiative ? message.XXConstant.WIN: message.XXConstant.LOSE;
+					return initiative ? code.Card.WIN: code.Card.LOSE;
 				}
 				else {
-					return (ownDanValue > otherDanValue) ? message.XXConstant.WIN: message.XXConstant.LOSE;
+					return (ownDanValue > otherDanValue) ? code.Card.WIN : code.Card.LOSE;
 				}
 			}
 			else {
-				return (ownDuiziValue > otherDuiziValue) ? message.XXConstant.WIN : message.XXConstant.LOSE;
+				return (ownDuiziValue > otherDuiziValue) ? code.Card.WIN : code.Card.LOSE;
 			}
 		}
 		else if (ownCards.pattern === 3){
 			if (ownCardsValue[2] === otherCardsValue[2]){
-				return initiative ? message.XXConstant.WIN: message.XXConstant.LOSE;
+				return initiative ? code.Card.WIN: code.Card.LOSE;
 			}
 			else {
-				return (ownCardsValue[2] > otherCardsValue[2]) ? message.XXConstant.WIN: message.XXConstant.LOSE;
+				return (ownCardsValue[2] > otherCardsValue[2]) ? code.Card.WIN: code.Card.LOSE;
 			}
 		}
 		else if (ownCards.pattern === 4){
 			if (ownCardsValue[2] != otherCardsValue[2]){
-				return (ownCardsValue[2]>otherCardsValue[2]) ? message.XXConstant.WIN: message.XXConstant.LOSE;
+				return (ownCardsValue[2]>otherCardsValue[2]) ? code.Card.WIN: code.Card.LOSE;
 			}
 			else if (ownCardsValue[1] != otherCardsValue[1]){
-				return (ownCardsValue[1]>otherCardsValue[1]) ? message.XXConstant.WIN: message.XXConstant.LOSE;
+				return (ownCardsValue[1]>otherCardsValue[1]) ? code.Card.WIN: code.Card.LOSE;
 			}
 			else if (ownCardsValue[0] != otherCardsValue[0]){
-				return (ownCardsValue[0]>otherCardsValue[0]) ? message.XXConstant.WIN: message.XXConstant.LOSE;
+				return (ownCardsValue[0]>otherCardsValue[0]) ? code.Card.WIN: code.Card.LOSE;
 			}
 			else {
-				return initiative ? message.XXConstant.WIN: message.XXConstant.LOSE;
+				return initiative ? code.Card.WIN: code.Card.LOSE;
 			}
 		}
 		else if (ownCards.pattern === 5){
 			if (ownCardsValue[2] === otherCardsValue[2]){
-				return initiative ? message.XXConstant.WIN: message.XXConstant.LOSE;
+				return initiative ? code.Card.WIN: code.Card.LOSE;
 			}
 			else {
-				return (ownCardsValue[2] > otherCardsValue[2]) ? message.XXConstant.WIN: message.XXConstant.LOSE;
+				return (ownCardsValue[2] > otherCardsValue[2]) ? code.Card.WIN: code.Card.LOSE;
 			}
 		}
 		else if (ownCards.pattern === 6){
 			if (ownCardsValue[2] === otherCardsValue[2]){
-				return initiative ? message.XXConstant.WIN: message.XXConstant.LOSE;
+				return initiative ? code.Card.WIN: code.Card.LOSE;
 			}
 			else {
-				return (ownCardsValue[2] > otherCardsValue[2]) ? message.XXConstant.WIN: message.XXConstant.LOSE;
+				return (ownCardsValue[2] > otherCardsValue[2]) ? code.Card.WIN: code.Card.LOSE;
 			}
 		}
 		else if (ownCards.pattern === 7){
-			return initiative ? message.XXConstant.WIN: message.XXConstant.LOSE;
+			return initiative ? code.Card.WIN: code.Card.LOSE;
 		}
 	}
 }

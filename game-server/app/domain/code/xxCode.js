@@ -15,6 +15,10 @@ module.exports = {
 		MAX_VALUE: 54,
 		MAX_PLAYER_NUM: 5,
 		MAX_CARD_VALUE:13,
+	},
+	Card: {
+		WIN: 2001,
+		LOSE: 2002,
 	}
 
 }

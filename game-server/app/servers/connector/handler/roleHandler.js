@@ -6,6 +6,7 @@ module.exports = function(app) {
 
 var Handler = function(app) {
     this.app = app;
+    this.amount = 0;
 };
 
 Handler.prototype.createPlayer = function(msg, session, next){
