@@ -13,18 +13,20 @@ var handler = Handler.prototype;
 
 handler.xxEnterGame = function(msg, session, next){
 	//next(null, {code: 200, number:2});
-	var result = teamManager.getOptimalRoomId({userId: 100, username: 'test'});
-	if (result.code == 0){
-		//notice other user
-		var serverIds = result.teamObj.getTeamPlayerServerId();
-		messageService.pushMessageByUids(serverIds, "onXXEnterTeam", {username: "test"});
-		next()
-	}
-	else {
-		//error 
-		next({code: 201});
-		return ;
-	}
+	var teamId = teamManager.getOptimalRoomId(session.uid, session.get('username'), session.get('serverId'));
+
+	if (teamId !== 0){
+		var res = teamManager.getEnterGame(teamId);
+		if (res != null){
+			messageService.pushMessageByUids(res, 'onXXAddPlayer', teamManager.getPlayerBasicInfo(session.uid, teamId));
+			messageService.pushMessageToPlayer({uid: session.uid, sid: session.get('serverId')}, 'onXXEnterGameReply', teamManager.getTeammateBasicInfo(session.uid, teamId));
+			next({code: 200});
+			return ;
+		}
+	} 
+
+	next({code: 201});
+	return ;
 }
 
 //发牌

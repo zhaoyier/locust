@@ -7,23 +7,27 @@ var gTeamObjDict = {};
 //global team id
 var gTeamId = 0;
 
-handler.createTeam = function(args){
+handler.createTeam = function(userId, serverId){
 	var teamObj = new Team(++gTeamId);
-	var result = teamObj.addPlayer(args);
+	var result = teamObj.addPlayer(userId);
 	if (result === 0){
 		gTeamObjDict[teamObj.teamId] = teamObj;
+		return teamObj.teamId;
 	}
-	return {code: result, teamObj: teamObj};
+	return 0;
 }
-
-handler.getOptimalRoomId = function(args){
+/*
+*function: 
+*params: 
+**/
+handler.getOptimalRoomId = function(userId, serverId){
 	if (Object.keys(gTeamObjDict).length > 0){
 		for (var i in gTeamObjDict){
 			var teamObj = gTeamObjDict[i];
 			if (teamObj.isTeamHasPosition() && teamObj.getPlayerNum() >= 3){
-				var result = teamObj.addPlayer(args);
+				var result = teamObj.addPlayer(userId, serverId);
 				if (result === 0){
-					return {code: 0, teamObj: teamObj};
+					return teamObj.teamId;
 				}
 			}
 		}
@@ -31,16 +35,67 @@ handler.getOptimalRoomId = function(args){
 		for (var i in gTeamObjDict){
 			var teamObj = gTeamObjDict[i];
 			if (teamObj.isTeamHasPosition()){
-				var result = teamObj.addPlayer(args);
+				var result = teamObj.addPlayer(userId, serverId);
 				if (result === 0){
-					return {code: 0, teamObj: teamObj};
+					return teamObj.teamId;
 				}
 			}
 		}
 	}
-	return createTeam(args);
+	return createTeam(userId, serverId);
 }
 
+/*
+*function: 
+*params: 
+**/
+handler.getTeammateServerIds = function(userId, teamId){
+	var teamObj = gTeamObjDict[teamId];
+	if (teamObj !== undefined){
+		return teamObj.getTeammateServerIds(userId);
+	}
+	
+	return null;
+}
+
+/*
+*function: 
+*params: 
+**/
+handler.getTeammateServerIds = function(userId, teamId){
+	var teamObj = gTeamObjDict[teamId];
+	if (teamObj !== undefined){
+		return teamObj.getTeammateServerIds(userId);
+	}
+	
+	return null;
+}
+
+/*
+*function: 
+*params: 
+**/
+handler.getPlayerBasicInfo = function(userId, teamId){
+	var teamObj = gTeamObjDict[teamId];
+	if (teamObj !== undefined){
+		return teamObj.getPlayerBasicInfo(userId);
+	}
+	
+	return null;
+}
+
+/*
+*function: 
+*params: 
+**/
+handler.getTeammateBasicInfo = function(userId, teamId){
+	var teamObj = gTeamObjDict[teamId];
+	if (teamObj !== undefined){
+		return teamObj.getTeammateBasicInfo(userId);
+	}
+	
+	return null;
+}
 
 
 

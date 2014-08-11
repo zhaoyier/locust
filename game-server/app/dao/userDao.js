@@ -25,4 +25,7 @@ userDao.updatePlayer = function(params, callback){
 	utils.invokeCallback(callback, null, {id:100});
 }
 
+userDao.queryPlayer = function(userId){
+	utils.invokeCallback(callback, null, {userId:100, username: 'test', avatar: '1'});
+}
 

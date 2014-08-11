@@ -20,11 +20,17 @@ var Handler = function(app) {
  */
 Handler.prototype.entry = function(msg, session, next) {
   var self = this;
+  var sessionService = self.app.get('sessionService');
 
   userDao.loginAccount(msg.username, msg.password, function(error, res){
     if (!error){
+      if (!!sessionService.getByUid(res.userId)){
+        next(null, {code: 201, error: true});
+      }
+
       session.bind(res.userId);
       session.set('username', msg.username);
+      session.set('serverId', self.app.get('serverId'));
       session.on('closed', onUserLeave.bind(null, self.app));
 
       var ip = session.__session__.__socket__.remoteAddress.ip;
