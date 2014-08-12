@@ -19,8 +19,8 @@ handler.xxEnterGame = function(msg, session, next){
 		var res = teamManager.getEnterGame(teamId);
 		if (res != null){
 			messageService.pushMessageByUids(res, 'onXXAddPlayer', teamManager.getPlayerBasicInfo(session.uid, teamId));
-			messageService.pushMessageToPlayer({uid: session.uid, sid: session.get('serverId')}, 'onXXEnterGameReply', teamManager.getTeammateBasicInfo(session.uid, teamId));
-			next({code: 200});
+			//messageService.pushMessageToPlayer({uid: session.uid, sid: session.get('serverId')}, 'onXXEnterGameReply', teamManager.getTeammateBasicInfo(session.uid, teamId));
+			next(null, {code: 200, teamManager.getTeammateBasicInfo(session.uid, teamId)});
 			return ;
 		}
 	} 
@@ -29,8 +29,8 @@ handler.xxEnterGame = function(msg, session, next){
 	return ;
 }
 
-//发牌
-handler.xxDeal = function(msg, session, next){
+//开始游戏
+handler.xxStartGame = function(msg, session, next){
 
 }
 
