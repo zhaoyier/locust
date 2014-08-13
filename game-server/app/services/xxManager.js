@@ -7,6 +7,10 @@ var gTeamObjDict = {};
 //global team id
 var gTeamId = 0;
 
+handler.initTeam = function(teamId) {
+	
+}
+
 handler.createTeam = function(userId, serverId){
 	var teamObj = new Team(++gTeamId);
 	var result = teamObj.addPlayer(userId);
@@ -62,10 +66,10 @@ handler.getTeammateServerIds = function(userId, teamId){
 *function: 
 *params: 
 **/
-handler.getTeammateServerIds = function(userId, teamId){
+handler.getPlayerServerIds = function(teamId) {
 	var teamObj = gTeamObjDict[teamId];
 	if (teamObj !== undefined){
-		return teamObj.getTeammateServerIds(userId);
+		return teamObj.getPlayerServerIds();
 	}
 	
 	return null;
@@ -97,5 +101,140 @@ handler.getTeammateBasicInfo = function(userId, teamId){
 	return null;
 }
 
+/*
+*function: 
+*params: 
+**/
+handler.isStartGame = function(teamId){
+	var teamObj = gTeamObjDict[teamId];
+	if (teamObj){
+		if (teamObj.isStartGame()){
+			return true;
+		}
 
+		if (teamObj.getPlayerNum() <= 2){
+			return false;
+		}
 
+		if ((Date.now() - teamObj.getStartTime()) >= 0){
+			teamObj.setStartGame();
+			return true;
+		} else {
+			return false;
+		} 
+	}
+	return null;
+}
+
+/*
+*function: 
+*params: 
+**/
+handler.getPlayerHandCard = function(userId, teamId){
+	var teamObj = gTeamObjDict[teamId];
+	if (teamObj){
+		return teamObj.getPlayerHandCard(userId);
+	}
+	return null;
+}
+
+/*
+*function: 
+*params: 
+**/
+handler.updatePlayerBet = function(userId, amount, teamId) {
+	var teamObj = gTeamObjDict[teamId];
+	if (teamObj){
+		return teamObj.updatePlayerBet(userId, amount);
+	}
+	return null;
+}
+
+/*
+*function: 
+*params: 
+**/
+handler.playerDiscard = function(userId, teamId) {
+	var teamObj = gTeamObjDict[teamId];
+	if (teamObj) {
+		return teamObj.playerDiscard(userId, amount);
+	}
+	return null;
+}
+
+/*
+*function: 
+*params: 
+**/
+handler.getNextPlayer = function(userId, teamId) {
+	var teamObj = gTeamObjDict[teamId];
+	if (teamObj) {
+		return teamObj.getNextPlayer(userId);
+	}
+	return null;
+}
+
+/*
+*function: 
+*params: 
+**/
+handler.playerLeave = function(userId, teamId) {
+	var teamObj = gTeamObjDict[teamId];
+	if (teamObj) {
+		return teamObj.removePlayer(userId);
+	}
+	return null;
+}
+
+/*
+*function: 
+*params: 
+**/
+handler.getCompareHandCard = function(ownId, otherId, teamId){
+	var teamObj = gTeamObjDict[teamId];
+	if (teamObj) {
+		var ownHandCard = teamObj.getPlayerHandCard(ownId);
+		var otherHandCard = teamObj.getPlayerHandCard(otherId);
+		return teamObj.getCompareHandCard(ownId, ownHandCard, otherId, otherHandCard, true);
+	}
+	return null;
+}
+
+/*
+*function: 
+*params: 
+**/
+handler.getActiveNumber = function(teamId){
+	var teamObj = gTeamObjDict[teamId];
+	if (teamObj) {
+		return teamObj.getActiveNum();
+	}
+
+	return null;
+}
+
+/*
+*function: 
+*params: 
+**/
+handler.getAllFund = function(teamId) {
+	var teamObj = gTeamObjDict[teamId];
+	if (teamObj) {
+		return teamObj.getAllFund();
+	}
+
+	return null;
+}
+
+/*
+*function: 
+*params: 
+**/
+handler.getPlayerBet = function(teamId) {
+	var teamObj = gTeamObjDict[teamId];
+	if (teamObj) {
+		return teamObj.getPlayerBet();
+	}
+
+	return null;
+}

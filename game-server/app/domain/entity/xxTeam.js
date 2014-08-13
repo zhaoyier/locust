@@ -3,9 +3,11 @@ var async = require('async');
 var logic = require('../logic/xxLogic');
 var poker = require('../statistic/poker');
 var protocol = require('../statistic/xxProtocolData');
+var code = require('../code/xxCode');
 
 var userAccount = require('../../dao/userAccount');
 var userDao = require('../../dao/userDao')
+
 
 module.exports = Handler;
 
@@ -18,7 +20,10 @@ function Handler(teamId){
 	this.teamId = teamId;
 	this.allFund = 0;
 	this.playerMap = {};
+	this.playerBet = {};
 	this.playerNum = 0;
+	this.activeNum = 0;
+	this.isStartGame = false;
 	this.startTime = Date.now()+15000;
 	this.deckCards = poker.getXXPoker();
 };
@@ -28,8 +33,7 @@ function Handler(teamId){
 *params: 
 **/
 Handler.prototype.initGame = function(args) {
-	//this.teamId = args.teamId;
-	//this.deck = deck.getXXPoker();
+	
 }
 
 /*
@@ -45,6 +49,7 @@ Handler.prototype.addPlayer = function(userId, serverId){
 	}
 
 	if (this.playerNum < MAX_MEMBER_NUM){
+		this.activeNum++;
 		this.playerNum++;
 	}
 
@@ -56,11 +61,13 @@ Handler.prototype.addPlayer = function(userId, serverId){
 *function: 删除用户
 *params: 
 **/
-Handler.prototype.removePlayer = function(args){
-	var player = this.playerMap[args.uid];
+Handler.prototype.removePlayer = function(userId){
+	var player = this.playerMap[userId];
 
 	if (player){
-		delete this.playerMap[args.uid];
+		this.activeNum -= 1;
+		this.playerNum -= 1;
+		delete this.playerMap[userId];
 	}
 }
 
@@ -123,12 +130,44 @@ Handler.prototype.isPlayerInTeam = function(playerId) {
 	return player ? true : false;
 }
 
+Handler.prototype.isStartGame = function(){
+	return this.isStartGame;
+}
+
+Handler.prototype.getStartTime = function(){
+	return this.startTime;
+}
+
+Handler.prototype.setStartGame = function(){
+	this.isStartGame = true;
+}
+
+Handler.prototype.getActiveNum = function(){
+	return this.activeNum;
+}
+
+Handler.prototype.getAllFund = function(){
+	return this.allFund;
+}
+
+Handler.prototype.getPlayerBet = function(){
+	return this.playerBet;
+}
+
 Handler.prototype.getTeammateServerIds = function(userId){
 	var serverIds = [];
 	for (var player in this.playerMap){
 		if (playerMap[player].userId != userId){
 			serverIds.push({uid: playerMap[player].userId, sid: playerMap[player].serverId});
 		}		
+	}
+	return serverIds;
+}
+
+Handler.prototype.getPlayerServerIds = function(){
+	var serverIds = [];
+	for (var player in this.playerMap){
+		serverIds.push({uid: playerMap[player].userId, sid: playerMap[player].serverId});
 	}
 	return serverIds;
 }
@@ -164,6 +203,93 @@ Handler.prototype.getTeammateBasicInfo = function(userId){
 	}
 	return teammates;
 }
+
+Handler.prototype.getPlayerHandCard = function(userId){
+	for (var player in this.playerMap) {
+		if (player === userId) {
+			var param = {cards: this.playerMap[player].handCard, pattern: this.playerMap[player].handPattern};
+			return param;
+		}
+	}
+	return null;
+}
+
+Handler.prototype.updatePlayerBet = function(userId, amount) {
+	this.allFund += parseInt(amount) > 0 ? parseInt(amount) : 0;
+	this.playerBet[userId] += parseInt(amount) > 0 ? parseInt(amount) : 0;
+	userAccount.updateAccount(userId, amount, function(error, result){
+		if (!error) {
+			return true;
+		} else {
+			return false;
+		}
+	})
+}
+
+Handler.prototype.playerDiscard = function(userId, amount) {
+	this.activeNum -= 1;
+	for (var player in this.playerMap) {
+		if (player === userId) {
+			this.playerMap[player].handStatus = 2;
+			return true;
+		}
+	}
+	return false;
+}
+
+Handler.prototype.getNextPlayer = function(userId){
+	var index = 0;
+	for (var player in this.playerMap) {
+		++index;
+		if (player === userId) {
+			break;
+		}
+	}
+
+	if (index === this.getPlayerNum) {
+		for (var player in this.playerMap) {
+			if (player !== userId && this.playerMap[player]['handStatus'] != 2) {
+				return player;
+			}
+		}
+	}
+
+	var counter = 0;
+	for (var player in this.playerMap) {
+		++counter;
+		if (counter <= this.getPlayerNum){
+			if (counter > index && player !== userId && this.playerMap[player]['handStatus'] != 2) {
+				return player;
+			}
+		}		
+	}
+
+	if (counter === this.getPlayerNum) {
+		for (var player in this.playerMap) {
+			if (player !== userId && this.playerMap[player]['handStatus'] != 2) {
+				return player;
+			}
+		}
+	}
+
+	return null;
+}
+
+Handler.prototype.getCompareHandCard = function(ownId, ownHandCard, otherId, otherHandCard, initiative) {
+	var res = logic.getCompareHandCard(ownHandCard, otherHandCard, initiative);
+	if (res !== 0 && res === code.Card.WIN) {
+		this.activeNum -= 1;
+		this.playerMap[otherId].handStatus = 2;
+		return true;
+	} else if (res !== 0 && res === code.Card.LOSE) {
+		this.activeNum -= 1;
+		this.playerMap[ownId].handStatus = 2;
+		return false;
+	}
+
+	return null;
+}
+
 
 
 function doAddPlayer(teamObj, userId, serverId) {
@@ -205,6 +331,7 @@ function doAddPlayer(teamObj, userId, serverId) {
 		return 0;
 	})
 }
+
 
 
 

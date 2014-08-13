@@ -552,7 +552,7 @@ handler.getCardColor = function(cardValue){
 /*
 *function: 比较卡牌大小
 **/
-handler.getCompareSize = function(ownCards, otherCards, initiative){
+handler.getCompareHandCard = function(ownCards, otherCards, initiative){
 	if (ownCards === undefined || otherCards === undefined){
 		return 0;
 	}

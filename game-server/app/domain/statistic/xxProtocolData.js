@@ -12,10 +12,6 @@ handler.User = function(args, userNo){
 	this.handStatus = args.status|0;
 }
 
-handler.xx = function(args){
-
-}
-
 handler.xxAddPlayerToMateResp = function(args){
 	
 }
@@ -23,6 +19,11 @@ handler.xxAddPlayerToMateResp = function(args){
 handler.xxAddPlayerToSelfResp = function(args){
 
 }
+
+handler.xxEnterGameReq = function(args){
+
+}
+
 
 
 

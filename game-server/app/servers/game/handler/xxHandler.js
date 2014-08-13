@@ -16,7 +16,7 @@ handler.xxEnterGame = function(msg, session, next){
 	var teamId = teamManager.getOptimalRoomId(session.uid, session.get('username'), session.get('serverId'));
 
 	if (teamId !== 0){
-		var res = teamManager.getEnterGame(teamId);
+		var res = teamManager.getTeammateServerIds(session.uid, teamId);
 		if (res != null){
 			messageService.pushMessageByUids(res, 'onXXAddPlayer', teamManager.getPlayerBasicInfo(session.uid, teamId));
 			//messageService.pushMessageToPlayer({uid: session.uid, sid: session.get('serverId')}, 'onXXEnterGameReply', teamManager.getTeammateBasicInfo(session.uid, teamId));
@@ -31,37 +31,76 @@ handler.xxEnterGame = function(msg, session, next){
 
 //开始游戏
 handler.xxStartGame = function(msg, session, next){
-
+	var res = teamManager.isStartGame(msg.teamId);
+	if (res === true){
+		var res = teamManager.getTeammateServerIds(session.uid, teamId);
+		messageService.pushMessageByUids(res, 'onXXStartGame');
+		next(null, {code: 200})
+	} else {
+		next(null, {code: 202});
+	}
 }
 
 //看牌
-handler.xxCheck = function(msg, session, next){
+handler.xxCheckHandCard = function(msg, session, next){
+	var res = teamManager.getPlayerHandCard(session.uid, msg.teamId);
+	if (res != null){
+		var teammaters = teamManager.getTeammateServerIds(session.uid, msg.teamId);
+		messageService.pushMessageByUids(teammaters, 'onXXCheckHandCard', {userId: session.uid});
+		next (null, {code: 200, handCard: res});
+		return ;
+	} 
 
+	next (null, {code: 201});
 }
 
 //押注
-handler.xxBet = function(msg, session, next){
+handler.xxUpdatePlayerBet = function(msg, session, next){
+	if (parseInt(msg.amount) <= 0){
+		next (null, {code: 201});
+		return ;
+	}
 
-}
+	var res = teamManager.updatePlayerBet(session.uid, msg.amount, msg.teamId);
+	if (res !== null) {
+		var teammaters = teamManager.getTeammateServerIds(session.uid, msg.teamId);
+		messageService.pushMessageByUids(teammaters, 'onXXUpdatePlayerBet', {userId: session.uid, amount: msg.amount, type: msg.type, nextUserId: 100});
+		next(null, {code: 200});
+		return ;
+	}
 
-//跟注
-handler.xxCall = function(msg, session, next){
-
-}
-
-//加注
-handler.xxRise = function(msg, session, next){
-
+	return next();
 }
 
 //放弃
 handler.xxDiscard = function(msg, session, next){
-
+	var res = teamManager.playerDiscard(session.uid, msg.teamId);
+	if (res !== null) {
+		var teammaters = teamManager.getTeammateServerIds(session.uid, msg.teamId);
+		messageService.pushMessageByUids(teammaters, 'onXXPlayerDiscard', {userId: session.uid});
+		next (null, {code: 200});
+		return ;
+	}
+	return next(null, {code: 201});
 }
 
 //比较
 handler.xxCompare = function(msg, session, next){
-
+	var res = teamManager.getCompareHandCard(session.uid, msg.other, msg.teamId);
+	if (res != null){
+		var active = teamManager.getActiveNumber(msg.teamId);
+		if (active === 1) {
+			var winer = res ? session.uid : msg.other;
+			doSettlementGame(winer, msg.teamId, next);
+		} else {
+			var teammaters = teamManager.getTeammateServerIds(session.uid, msg.teamId);
+			messageService.pushMessageByUids(teammaters, 'onXXCompareHandCard', {userId: res ? session.uid : msg.other, status: res ? 0 : 1});
+			next(null, {code: 200, status: res ? 0 :1});
+			return ;
+		}
+	}
+	return next(null, {code: 201});
+	
 }
 
 //孤注一掷
@@ -69,15 +108,16 @@ handler.xxAllIn = function(msg, session, next){
 
 }
 
+//离开游戏
+Handler.xxPlayerLeave = function(msg, session, next){
+
+}
+
 //结算
-var doSettlementGame = function(msg, session, next){
-
-}
-
-var pushMessageToPlayer = function(uid, route, msg){
-
-}
-
-var pushMessageByUids = function(uids, route, msg){
+var doSettlementGame = function(userId, teamId, next){
+	var players = teamManager.getPlayerServerIds(teamId);
+	var fund = teamManager.getAllFund(teamId);
+	var bet = teamManager.getPlayerBet(teamId);
+	messageService.pushMessageByUids(players, 'onXXSettlement', {winer: userId, fund: fund, bet: bet});
 	
 }
