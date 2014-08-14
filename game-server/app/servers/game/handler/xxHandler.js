@@ -19,7 +19,6 @@ handler.xxEnterGame = function(msg, session, next){
 		var res = teamManager.getTeammateServerIds(session.uid, teamId);
 		if (res != null){
 			messageService.pushMessageByUids(res, 'onXXAddPlayer', teamManager.getPlayerBasicInfo(session.uid, teamId));
-			//messageService.pushMessageToPlayer({uid: session.uid, sid: session.get('serverId')}, 'onXXEnterGameReply', teamManager.getTeammateBasicInfo(session.uid, teamId));
 			next(null, {code: 200, teamManager.getTeammateBasicInfo(session.uid, teamId)});
 			return ;
 		}
@@ -33,8 +32,9 @@ handler.xxEnterGame = function(msg, session, next){
 handler.xxStartGame = function(msg, session, next){
 	var res = teamManager.isStartGame(msg.teamId);
 	if (res === true){
-		var res = teamManager.getTeammateServerIds(session.uid, teamId);
-		messageService.pushMessageByUids(res, 'onXXStartGame');
+		var res = teamManager.getTeammateServerIds(session.uid, msg.teamId);
+		var playerNumber = teamManager.getPlayerServerIds(msg.teamId);
+		messageService.pushMessageByUids(res, 'onXXStartGame', {number: parseInt(playerNumber.length)});
 		next(null, {code: 200})
 	} else {
 		next(null, {code: 202});
@@ -105,12 +105,44 @@ handler.xxCompare = function(msg, session, next){
 
 //孤注一掷
 handler.xxAllIn = function(msg, session, next){
+	var players = teamManager.getActiveUserId(session.uid, msg.teamId);
+	if (players && players.length === 1) {
+		var res = teamManager.getCompareHandCard(session.uid, players[0], msg.teamId);
+		if (res != null) {
+			var winer = res ? session.uid : players[0];
+			doSettlementGame(winer, msg.teamId, next);
+		}
+	} else if (players && players.length > 1){
+		for (var i=0; i<players.length; ++i) {
+			var res = teamManager.getCompareHandCard(session.uid, players[i], msg.teamId);
+			if (res != null && res === false) {
+				var teammaters = teamManager.getTeammateServerIds(session.uid, msg.teamId);
+				messageService.pushMessageByUids(teammaters, 'onXXCompareHandCard', {userId: session.uid, status: 0});
+				next(null, {code: 200, status: 0});
+				return ;
+			} else if (res === null) {  
+				next (null, {code: 201});
+				return ;
+			}
+		}
 
+		var teammaters = teamManager.getTeammateServerIds(session.uid, msg.teamId);
+		messageService.pushMessageByUids(teammaters, 'onXXCompareHandCard', {userId: session.uid, status: 1});
+		next(null, {code: 200, status: 1});
+		return ;
+	}
 }
 
 //离开游戏
 Handler.xxPlayerLeave = function(msg, session, next){
-
+	var res = teamManager.playerLeave(session.uid, msg.teamId);
+	if (res != null) {
+		var teammaters = teamManager.getTeammateServerIds(session.uid, msg.teamId);
+		messageService.pushMessageByUids(teammaters, 'onXXPlayerLeave', {userId: session.uid});
+		next (null, {code: 200});
+		return ;
+	}
+	return next(null, {code: 201});
 }
 
 //结算

@@ -23,6 +23,7 @@ function Handler(teamId){
 	this.playerBet = {};
 	this.playerNum = 0;
 	this.activeNum = 0;
+	this.playerPlace = [];
 	this.isStartGame = false;
 	this.startTime = Date.now()+15000;
 	this.deckCards = poker.getXXPoker();
@@ -53,9 +54,43 @@ Handler.prototype.addPlayer = function(userId, serverId){
 		this.playerNum++;
 	}
 
-	doAddPlayer(this, userId, serverId);
+	//doAddPlayer(this, userId, serverId);
+	
+	async.parallel([
+		function(callback){ 
+			userDao.queryPlayer(userId, callback);
+		},
+		function(callback){
+			userAccount.queryAccount(userId, callback);
+		}
+	], function(error, res){
+		if (error === null && res[0] != undefined){
+			if (res[0].username && res[0].avatar){
+				var User = new protocol.User();
+				var handCard = logic.creatHandCard(this.deckCards);
+
+				User.userId = userId|0;
+				User.username = res[0].username|'';
+				User.avatar = res[0].avatar|'';
+				User.balance = res[0].balance|0;
+				User.serverId = serverId;
+				User.userPlace = getPlayerPlace(this.placeArray);
+				this.playerPlace.push(User.userPlace);
+
+				User.handCard = handCard.cards|[];
+				User.handPattern = handCard.pattern;
+				User.handStatus = 0;
+
+				this.playerMap[userId] = User;
+
+			}
+		}
+	})
+
 	return 0;
 }
+
+
 
 /*
 *function: 删除用户
@@ -63,12 +98,17 @@ Handler.prototype.addPlayer = function(userId, serverId){
 **/
 Handler.prototype.removePlayer = function(userId){
 	var player = this.playerMap[userId];
+	var index = getPlayerPlaceIndex(player.userPlace, this.placeArray)
 
 	if (player){
 		this.activeNum -= 1;
 		this.playerNum -= 1;
+		this.placeArray.splice(index, 1);
 		delete this.playerMap[userId];
+
+		return true;
 	}
+	return null;
 }
 
 /*
@@ -290,17 +330,21 @@ Handler.prototype.getCompareHandCard = function(ownId, ownHandCard, otherId, oth
 	return null;
 }
 
+Handler.prototype.getActiveUserId = function (userId){
+	var players = [];
+	for (var player in this.playerMap) {
+		if (player != userId && this.playerMap[player].handStatus != 2) {
+			players.push(player);
+		}
+	}
+	return players;
+}
+
 
 
 function doAddPlayer(teamObj, userId, serverId) {
-	var player = new protocol.Player(userId);
-	player.handCard = handCard.cards;
-	player.handPattern = handCard.pattern;
-
-	teamObj.playerMap[userId] = player;
-
 	async.parallel([
-		function(callback){
+		function(callback){ 
 			userDao.queryPlayer(userId, callback);
 		},
 		function(callback){
@@ -312,12 +356,13 @@ function doAddPlayer(teamObj, userId, serverId) {
 				var User = new protocol.User();
 				var handCard = logic.creatHandCard(teamObj.deckCards);
 
-				User.userNo = teamObj.getPlayerNum()+1;
 				User.userId = userId|0;
 				User.username = res[0].username|'';
 				User.avatar = res[0].avatar|'';
 				User.balance = res[0].balance|0;
 				User.serverId = serverId;
+				User.userPlace = teamObj.getPlayerPlace(teamObj.placeArray);
+				teamObj.placeArray.push(User.userPlace);
 
 				User.handCard = handCard.cards|[];
 				User.handPattern = handCard.pattern;
@@ -330,6 +375,25 @@ function doAddPlayer(teamObj, userId, serverId) {
 		
 		return 0;
 	})
+}
+
+function getPlayerPlace(placeArray){
+	var str = placeArray.toString();
+	for (var i=1; i<=5; ++i) {
+		if (str.indexOf(i) === -1) {
+			return i;
+		}
+	}
+	return null;
+}
+
+function getPlayerPlaceIndex(place, placeArray) {
+	for (var i=0; i<placeArray.length; ++i) {
+		if (place === placeArray[i]) {
+			return i;
+		}
+	}
+	return null;
 }
 
 

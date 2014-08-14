@@ -8,7 +8,7 @@ var gTeamObjDict = {};
 var gTeamId = 0;
 
 handler.initTeam = function(teamId) {
-	
+
 }
 
 handler.createTeam = function(userId, serverId){
@@ -236,5 +236,17 @@ handler.getPlayerBet = function(teamId) {
 		return teamObj.getPlayerBet();
 	}
 
+	return null;
+}
+
+/*
+*function: 
+*params: 
+**/
+handler.getActiveUserId = function(userId, teamId){
+	var teamObj = gTeamObjDict[teamId];
+	if (teamObj) {
+		return teamObj.getActiveUserId(userId);
+	}
 	return null;
 }
