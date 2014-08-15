@@ -1,11 +1,11 @@
 module.exports = handler;
-handler.User = function(args){
+handler.User = function(args) {
 	this.userId = args.userId|0;
 	this.username = args.username|'';
 	this.avatar = args.avatar|'';
 	this.balance = args.balance|0;	
 	this.serverId = args.serverId|0;
-	this.userPlace = args.userPlace;
+	this.place = args.place;
 
 	this.handCard = args.hand|[];
 	this.handPattern = args.pattern|0;

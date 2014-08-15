@@ -74,8 +74,8 @@ Handler.prototype.addPlayer = function(userId, serverId){
 				User.avatar = res[0].avatar|'';
 				User.balance = res[0].balance|0;
 				User.serverId = serverId;
-				User.userPlace = getPlayerPlace(this.placeArray);
-				this.playerPlace.push(User.userPlace);
+				User.place = getPlayerPlace(this.placeArray);
+				this.playerPlace.push(User.place);
 
 				User.handCard = handCard.cards|[];
 				User.handPattern = handCard.pattern;
@@ -98,7 +98,7 @@ Handler.prototype.addPlayer = function(userId, serverId){
 **/
 Handler.prototype.removePlayer = function(userId){
 	var player = this.playerMap[userId];
-	var index = getPlayerPlaceIndex(player.userPlace, this.placeArray)
+	var index = getPlayerPlaceIndex(player.place, this.placeArray)
 
 	if (player){
 		this.activeNum -= 1;
@@ -219,7 +219,8 @@ Handler.prototype.getPlayerBasicInfo = function(userId){
 				userId: playerMap[player].userId,
 				username: playerMap[player].username,
 				avatar: playerMap[player].avatar,
-				balance: playerMap[player].balance
+				balance: playerMap[player].balance,
+				place: playerMap[player].place
 			}
 
 			return param;
@@ -236,7 +237,8 @@ Handler.prototype.getTeammateBasicInfo = function(userId){
 				userId: playerMap[player].userId,
 				username: playerMap[player].username,
 				avatar: playerMap[player].avatar,
-				balance: playerMap[player].balance
+				balance: playerMap[player].balance,
+				place: playerMap[player].place
 			}
 			teammates.push(param);
 		}
@@ -361,8 +363,8 @@ function doAddPlayer(teamObj, userId, serverId) {
 				User.avatar = res[0].avatar|'';
 				User.balance = res[0].balance|0;
 				User.serverId = serverId;
-				User.userPlace = teamObj.getPlayerPlace(teamObj.placeArray);
-				teamObj.placeArray.push(User.userPlace);
+				User.place = teamObj.getPlayerPlace(teamObj.placeArray);
+				teamObj.placeArray.push(User.place);
 
 				User.handCard = handCard.cards|[];
 				User.handPattern = handCard.pattern;
