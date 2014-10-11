@@ -8,27 +8,24 @@ var app = pomelo.createApp();
 app.set('name', 'locust');
 
 app.configure('production|development', 'connector', function(){
-    app.set('connectorConfig',
-        {   
-            connector : pomelo.connectors.hybridconnector,
-            heartbeat : 3,
-        }); 
+    app.set('connectorConfig',{   
+        connector : pomelo.connectors.hybridconnector,
+        heartbeat : 3,
+    }); 
 });
 
 app.configure('production|development', 'gate', function(){
-    app.set('connectorConfig',
-        {   
-            connector : pomelo.connectors.hybridconnector,
-            useProtobuf : true
-        }); 
+    app.set('connectorConfig',{   
+        connector : pomelo.connectors.hybridconnector,
+        useProtobuf : true
+    }); 
 });
 
 app.configure('production|development', 'game', function(){
-    app.set('connectorConfig',
-        {
-            connector : pomelo.connectors.hybridconnector,
-            useProtobuf : true
-        }); 
+    app.set('connectorConfig', {
+        connector : pomelo.connectors.hybridconnector,
+        useProtobuf : true
+    }); 
 });
 
 

@@ -23,7 +23,7 @@ Handler.prototype.createPlayer = function(msg, session, next){
 	})
 }
 
-Handler.prototype.getPlayer = function(msg, session, next){
+Handler.prototype.getPlayerBasic = function(msg, session, next){
 	userDao.getPlayerInfo(msg.from, function(error, player){
 		if (player){
 			next(null, {code: 200, avatar: player.avatar});
@@ -35,35 +35,34 @@ Handler.prototype.getPlayer = function(msg, session, next){
 	})
 }
 
-Handler.prototype.updatePlayer = function(msg, session, next){
+//更新玩家基本信息
+Handler.prototype.updatePlayerBasic = function(msg, session, next){
 
 }
 
-Handler.prototype.queryMessage = function(msg, session, next){
+//
+Handler.prototype.queryMessageInfo = function(msg, session, next){
 
 }
 
-Handler.prototype.queryAward = function(msg, session, next){
+Handler.prototype.queryAwardInfo = function(msg, session, next){
 
 }
 
-Handler.prototype.getAward = function(msg, session, next){
+
+Handler.prototype.queryRankInfo = function(msg, session, next){
 
 }
 
-Handler.prototype.queryRank = function(msg, session, next){
+Handler.prototype.queryActivityInfo = function(msg, session, next){
 
 }
 
-Handler.prototype.queryActivity = function(msg, session, next){
+Handler.prototype.queryShopInfo = function(msg, session, next){
 
 }
 
-Handler.prototype.queryShop = function(msg, session, next){
-
-}
-
-Handler.prototype.consumeShop = function(msg, session, next){
+Handler.prototype.buyProps = function(msg, session, next){
 
 }
 
